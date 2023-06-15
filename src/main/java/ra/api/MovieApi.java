@@ -29,13 +29,10 @@ public class MovieApi {
         return movieService.getById(Integer.valueOf(movieId));
     }
 
-    @GetMapping("/showing/search/{name}")
+    @GetMapping("/search/{name}")
     public List<MovieDTO> findAllShowingMoviesByName(@PathVariable String name){
         return movieService.findAllShowingMoviesByName(name);
     }
 
-    @PostMapping("/create")
-    public void updateMovie(@RequestBody Movie movie){
-        movieRepository.save(movie);
-    }
+
 }
