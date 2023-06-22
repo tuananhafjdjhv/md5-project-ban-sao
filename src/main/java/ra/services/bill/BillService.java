@@ -16,6 +16,8 @@ import ra.securities.model.User;
 import ra.securities.reponsitory.IUserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BillService implements IBillService {
@@ -36,10 +38,10 @@ public class BillService implements IBillService {
     public void createNewBill(BookingRequestDTO bookingRequestDTO) throws RuntimeException {
 
         //Lấy ra lịch
-        Schedule schedule = scheduleRepository.getById(bookingRequestDTO.getScheduleId());
+        Schedule schedule = scheduleRepository.findById(bookingRequestDTO.getScheduleId()).get();
 
         //Lấy ra người dùng
-        User user = userRepository.getById(Long.valueOf(bookingRequestDTO.getUserId()));
+        User user = userRepository.findById(bookingRequestDTO.getUserId()).get();
 
         //Lưu Bill gồm thông tin người dùng xuống trước
         Bill billToCreate = new Bill();
@@ -50,14 +52,15 @@ public class BillService implements IBillService {
         //Với mỗi ghế ngồi check xem đã có ai đặt chưa, nếu rồi thì throw, roll back luôn còn ko
         //thì đóng gói các thông tin ghế và lịch vào vé và lưu xuống db
         bookingRequestDTO.getListSeatIds().forEach(seatId -> {
-            if (!ticketRepository.findTicketsBySchedule_IdAndSeat_Id(schedule.getId(), seatId)
-                    .isEmpty()) {// Nếu đã có người đặt vé ghế đó ở lịch cụ thể đó thì
+            List<Ticket> ticketList = ticketRepository.findTicketBySeatAndSchedule(seatRepository.findById(seatId).get(),schedule);
+            if (!ticketList.isEmpty()) {// Nếu đã có người đặt vé ghế đó ở lịch cụ thể đó thì
                 throw new RuntimeException("Đã có người nhanh tay hơn đặt ghế, mời bạn chọn lại!");
             }
             // đóng gói lịch, seat và bill vào từng vé rồi add vào list vé
+
             Ticket ticket = new Ticket();
             ticket.setSchedule(schedule);
-            ticket.setSeat(seatRepository.getById(seatId));
+            ticket.setSeat(seatRepository.findById(seatId).get());
             ticket.setBill(createdBill);
             ticket.setQrImageURL("https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg");
             ticketRepository.save(ticket);

@@ -1,6 +1,7 @@
 package ra.securities.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import ra.securities.dto.requset.ChangePass;
 import ra.securities.dto.requset.SignInForm;
 import ra.securities.dto.requset.SignUpForm;
 import ra.securities.dto.response.JwtResponse;
@@ -17,10 +19,13 @@ import ra.securities.model.Role;
 import ra.securities.model.RoleName;
 import ra.securities.model.User;
 import ra.securities.security.jwt.JwtProvider;
+import ra.securities.security.userPrincipal.UserDetailService;
 import ra.securities.security.userPrincipal.UserPrincipal;
 import ra.securities.service.role.IRoleService;
 import ra.securities.service.user.IUserService;
+import ra.services.mail.MailSenderService;
 
+import javax.mail.MessagingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,16 +34,19 @@ import java.util.Set;
 @RequestMapping("/api/auth")
 @CrossOrigin("*")
 @RequiredArgsConstructor
-public class AuthController {
+public class    AuthController {
+    private  final MailSenderService mailSenderService;
     private final IUserService userService;
     private final IRoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserDetailService userDetailService;
 
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseMessage> doSignUp(@RequestBody SignUpForm signUpForm) {
+    public ResponseEntity<ResponseMessage> doSignUp(@RequestBody SignUpForm signUpForm) throws MessagingException {
         boolean isExistUsername = userService.existsByUsername(signUpForm.getUsername());
         boolean isExistEmail = userService.existsByEmail(signUpForm.getEmail());
         if (isExistUsername) {
@@ -88,7 +96,7 @@ public class AuthController {
                 .phoneNumber(signUpForm.getPhoneNumber())
                 .roles(roles)
                 .build();
-
+        mailSenderService.sendEmail("hunghx@rikkeisoft.com","helo","xin chao");
         return ResponseEntity.ok().body(
                 ResponseMessage.builder()
                         .status("OK")
@@ -133,5 +141,18 @@ public class AuthController {
     @GetMapping("/show-all-user")
     public List<User> findAll(){
         return userService.findAll();
+    }
+    @PutMapping("/change-password")
+    public ResponseEntity<ResponseMessage> changPass(@RequestBody ChangePass changePass){
+        User user = userDetailService.getFromAuthentication();
+        String pass = user.getPassword();
+        if (!passwordEncoder.matches(changePass.getOldPass(), pass)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseMessage("Failed","Mật khẩu trùng!!",null)
+            );
+        }
+        user.setPassword(passwordEncoder.encode(changePass.getNewPass()));
+        userService.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

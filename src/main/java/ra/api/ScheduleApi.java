@@ -16,15 +16,19 @@ public class ScheduleApi {
     private IScheduleService scheduleService;
 
     @GetMapping("/start-times/{movieId}/{branchId}/{startDate}")
-    public List<String> getStartTimes(@PathVariable Integer movieId, @PathVariable Integer branchId,
+    public List<String> getStartTimes(@PathVariable Integer movieId,
+                                      @PathVariable Integer branchId,
                                       @PathVariable String startDate) {
         return scheduleService.getStartTimes(movieId,branchId, LocalDate.parse(startDate));
     }
 
-    @GetMapping
-    public List<ScheduleDTO> getSchedules(@RequestParam String movieId, @RequestParam String branchId,
-                                          @RequestParam String startDate, @RequestParam String startTime,
-                                          @RequestParam String roomId){
-        return scheduleService.getSchedules(Integer.valueOf(movieId), Integer.valueOf(branchId),startDate,startTime, Integer.valueOf(roomId));
+    @GetMapping("/branch/{movieId}/{branchId}/{startDate}/{roomId}")
+    public List<ScheduleDTO> getSchedules(@PathVariable String movieId,
+                                          @PathVariable String branchId,
+                                          @PathVariable String startDate,
+                                          @PathVariable String roomId){
+        List<ScheduleDTO> list = scheduleService.getSchedules(Integer.valueOf(movieId),
+                Integer.valueOf(branchId),startDate, Integer.valueOf(roomId));
+        return list;
     }
 }

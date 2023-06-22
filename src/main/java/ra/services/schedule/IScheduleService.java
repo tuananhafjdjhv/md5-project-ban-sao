@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IScheduleService {
     List<String> getStartTimes(Integer movieId, Integer branchId, LocalDate startDate);
-    List<ScheduleDTO> getSchedules(Integer movieId, Integer branchId, String startDate, String startTime,
+    List<ScheduleDTO> getSchedules(Integer movieId, Integer branchId, String startDate,
                                    Integer roomId);
 }

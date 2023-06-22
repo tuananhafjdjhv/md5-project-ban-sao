@@ -16,6 +16,6 @@ public class TicketApi {
 
     @GetMapping("/{userId}")
     public List<TicketDTO> getTicketsByUserId(@PathVariable String userId){
-        return ticketService.getTicketsByUserId(Integer.valueOf(userId));
+        return ticketService.getTicketsByUserId(Long.valueOf(userId));
     }
 }

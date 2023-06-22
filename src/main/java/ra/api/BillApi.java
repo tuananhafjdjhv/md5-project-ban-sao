@@ -30,11 +30,12 @@ public class BillApi {
         try {
             billService.createNewBill(bookingRequestDTO);
         } catch (RuntimeException e){
+            e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
         return  new ResponseEntity<>("Bạn đã mua vé xem phim thành công !",HttpStatus.OK);
     }
-    @GetMapping("/showBill")
+    @GetMapping("/show-all-bill")
     public List<BillDTO> showBill() {
 
         return billRepository.findAll()

@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ra.dtos.BranchDTO;
+import ra.entities.entity.Branch;
+import ra.repositories.IBranchRepository;
 import ra.services.branch.IBranchService;
 
 import java.util.List;
@@ -14,9 +16,15 @@ import java.util.List;
 @RequestMapping(value="/api/branches", produces = "application/json")
 public class BranchApi {
     @Autowired
+    private IBranchRepository branchRepository;
+    @Autowired
     private IBranchService branchService;
     @GetMapping("/branch/{movieId}")
    public ResponseEntity<List<BranchDTO>> getBranchesThatShowTheMovie(@PathVariable Integer movieId){
         return new ResponseEntity<>(branchService.getBranchesThatShowTheMovie(movieId), HttpStatus.OK);
+    }
+    @GetMapping("")
+    public List<Branch> getAllBranch(){
+        return branchRepository.findAll();
     }
 }

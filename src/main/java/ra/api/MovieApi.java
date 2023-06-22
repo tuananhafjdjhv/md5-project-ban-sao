@@ -34,5 +34,4 @@ public class MovieApi {
         return movieService.findAllShowingMoviesByName(name);
     }
 
-
 }

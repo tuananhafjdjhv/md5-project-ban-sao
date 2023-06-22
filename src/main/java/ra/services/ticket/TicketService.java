@@ -17,7 +17,7 @@ public class TicketService implements ITicketService {
     private ModelMapper modelMapper;
 
     @Override
-    public List<TicketDTO> getTicketsByUserId(Integer userId) {
+    public List<TicketDTO> getTicketsByUserId(Long  userId) {
         return ticketRepository.findTicketsByUserId(userId)
                 .stream().map(ticket -> modelMapper.map(ticket, TicketDTO.class))
                 .collect(Collectors.toList());

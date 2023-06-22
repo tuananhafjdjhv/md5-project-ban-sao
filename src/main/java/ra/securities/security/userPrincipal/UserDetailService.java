@@ -1,6 +1,7 @@
 package ra.securities.security.userPrincipal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,5 +18,9 @@ public class UserDetailService implements UserDetailsService {
         User user = userService.findByUsername(username)
                 .orElseThrow(()-> new UsernameNotFoundException("Failed -> NOT FOUND USE at username: "+username));
         return UserPrincipal.build(user);
+    }
+    public User getFromAuthentication(){
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userService.findByUsername(userPrincipal.getUsername()).get();
     }
 }

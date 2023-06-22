@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import ra.securities.security.jwt.JwtEntryPoint;
 import ra.securities.security.jwt.JwtTokenFilter;
 import ra.securities.security.userPrincipal.UserDetailService;
+import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Collections;
 

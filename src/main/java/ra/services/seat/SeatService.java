@@ -30,7 +30,7 @@ public class SeatService implements ISeatService{
         List<Seat> listSeat = seatRepository.getSeatByRoom_Id(room.getId());
 
         // Lấy ra các vé đã được đặt trong lịch đó rồi map sang các chỗ ngồi
-        List<Seat> occupiedSeats = ticketRepository.findTicketsBySchedule_Id(scheduleId)
+        List<Seat> occupiedSeats = ticketRepository.findTicketsBySchedule_Id(Math.toIntExact(scheduleId))
                 .stream().map(ticket -> ticket.getSeat())
                 .collect(Collectors.toList());
 
@@ -40,7 +40,8 @@ public class SeatService implements ISeatService{
             if(occupiedSeats.stream()
                     .map(occupiedSeat->occupiedSeat.getId())
                     .collect(Collectors.toList()).contains(seat.getId())){
-                seatDTO.setIsOccupied(1); // Nếu ghế nào nằm trong list ghế đã được occupied thì set = 1
+                seatDTO.setIsOccupied(1);
+                // Nếu ghế nào nằm trong list ghế đã được mua thì set = 1
             }
             return seatDTO;
         }).collect(Collectors.toList());
